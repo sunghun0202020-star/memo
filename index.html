@@ -6,22 +6,402 @@
     <title>Memotive - Every Cell Remembers.</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#7E6CF9">
-    <link rel="apple-touch-icon" href="icon-192-vivid.png">
+    <style>
+        /* --- DESIGN SYSTEM & VARIABLE --- */
+        :root {
+            --brand-main: #7E6CF9;
+            --brand-sub: #B9A7FF;
+            --mint: #A7E7D7;
+            --sky: #CDE8FF;
+            --white: #FFFFFF;
+            --bg-dark: #667085;
+            --bg-light: #F8F9FA;
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --glass-shadow: rgba(31, 38, 135, 0.08);
+            --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background: linear-gradient(135deg, #F5F7FF 0%, #EBF3FC 50%, #E8F8F5 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVIGATION --- */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--brand-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo .logo-dot {
+            width: 12px; height: 12px;
+            background: var(--mint);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+        }
+
+        nav { display: flex; gap: 30px; }
+        nav a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+        nav a:hover, nav a.active {
+            color: var(--brand-main);
+        }
+
+        .btn-auth {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--brand-sub);
+            color: var(--brand-main);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-auth:hover {
+            background: var(--brand-main);
+            color: white;
+            box-shadow: 0 4px 10px rgba(126, 108, 249, 0.2);
+        }
+
+        /* --- MAIN CONTAINER & PAGES --- */
+        main {
+            margin-top: 70px;
+            flex: 1;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .page.active { display: block; }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 var(--glass-shadow);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brand-main) 0%, var(--brand-sub) 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(126, 108, 249, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(126, 108, 249, 0.4);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 15px;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.15);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin-top: 5px;
+        }
+        .btn-sm:hover {
+            background: #eee;
+            border-color: #888;
+        }
+
+        /* --- HOME PAGE --- */
+        #page-home { text-align: center; padding-top: 40px; }
+        .home-container {
+            display: flex; flex-direction: column; align-items: center; position: relative;
+        }
+        .slogan {
+            font-size: 16px; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--brand-main); font-weight: 700; margin-bottom: 12px;
+        }
+        .main-title {
+            font-size: 48px; font-weight: 800; margin-bottom: 20px;
+            background: linear-gradient(135deg, #4F3CC9 0%, var(--brand-main) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .intro-text {
+            font-size: 17px; color: #666; line-height: 1.6; max-width: 600px; margin-bottom: 40px;
+        }
+        .moti-container { position: relative; width: 220px; height: 220px; margin-bottom: 40px; }
+        .moti {
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 35% 35%, #E6E1FF 0%, var(--brand-sub) 60%, var(--brand-main) 100%);
+            border-radius: 50%; position: relative;
+            box-shadow: 0 15px 35px rgba(126, 108, 249, 0.2), inset -10px -10px 20px rgba(0,0,0,0.1);
+            animation: float 4s ease-in-out infinite;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .moti-face { width: 80px; height: 40px; position: relative; display: flex; justify-content: space-between; align-items: center; }
+        .moti-eye { width: 16px; height: 16px; background: #222; border-radius: 50%; position: relative; }
+        .moti-eye::after { content: ''; position: absolute; top: 3px; left: 3px; width: 5px; height: 5px; background: white; border-radius: 50%; }
+        .moti-mouth { width: 14px; height: 8px; border-bottom: 3px solid #222; border-radius: 0 0 10px 10px; position: absolute; bottom: 5px; left: 33px; }
+        .moti-blush { width: 12px; height: 8px; background: rgba(255, 100, 150, 0.4); border-radius: 50%; position: absolute; bottom: 8px; }
+        .moti-blush.left { left: -6px; }
+        .moti-blush.right { right: -6px; }
+
+        .ambient-cells { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: -1; }
+        .bg-cell { position: absolute; border-radius: 50%; background: var(--glass-bg); backdrop-filter: blur(4px); border: 1px solid var(--glass-border); animation: float random ease-in-out infinite; opacity: 0.6; }
+
+        /* --- WRITE PAGE --- */
+        .write-wrapper { max-width: 650px; margin: 0 auto; }
+        .write-wrapper h2 { font-size: 24px; margin-bottom: 24px; text-align: center; }
+        .textarea-container { position: relative; margin-bottom: 20px; }
+        textarea {
+            width: 100%; height: 220px; background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 20px;
+            font-size: 16px; resize: none; outline: none; transition: all 0.3s ease; line-height: 1.6;
+        }
+        textarea:focus { background: rgba(255, 255, 255, 0.95); border-color: var(--brand-main); box-shadow: 0 0 0 4px rgba(126, 108, 249, 0.15); }
+        .char-counter { position: absolute; bottom: 15px; right: 20px; font-size: 14px; color: #888; }
+        .write-actions { text-align: center; }
+
+        /* Toast Alert */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(40, 42, 55, 0.9); color: white; padding: 14px 28px; border-radius: 30px;
+            font-size: 15px; font-weight: 500; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s; opacity: 0; z-index: 2000; pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* --- MEMORY CELLS PAGE --- */
+        .cells-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .search-box { position: relative; width: 280px; }
+        .search-box input {
+            width: 100%; padding: 10px 16px 10px 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.1);
+            outline: none; background: rgba(255, 255, 255, 0.7); font-size: 14px; transition: all 0.3s ease;
+        }
+        .search-box input:focus { background: var(--white); border-color: var(--brand-main); }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; }
+
+        .petri-dish {
+            width: 100%; height: 550px; background: rgba(167, 231, 215, 0.15);
+            border-radius: 24px; border: 1px solid rgba(167, 231, 215, 0.3);
+            position: relative; overflow: hidden; box-shadow: inset 0 0 40px rgba(167, 231, 215, 0.2);
+        }
+
+        .memory-cell-node {
+            position: absolute; border-radius: 50%; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            color: #222; font-size: 12px; font-weight: 700;
+            box-shadow: inset -4px -4px 12px rgba(0,0,0,0.05), 0 8px 20px rgba(0,0,0,0.05);
+            transition: filter 0.3s ease, opacity 0.3s ease;
+            user-select: none; z-index: 5;
+        }
+        .memory-cell-node:hover {
+            filter: brightness(1.1);
+            z-index: 50;
+        }
+        .memory-cell-node.blur-out { opacity: 0.2; filter: blur(2px); }
+        .memory-cell-node.highlight-in { opacity: 1; filter: blur(0); border: 2px solid var(--brand-main); }
+        .no-memories-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; color: #778; font-weight: 600; display: none; }
+
+        /* --- CALENDAR PAGE --- */
+        .calendar-container { max-width: 700px; margin: 0 auto; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .calendar-header h3 { font-size: 22px; font-weight: 700; }
+        .calendar-nav-btn { background: white; border: 1px solid rgba(0,0,0,0.08); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .calendar-nav-btn:hover { background: #eee; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .weekday { font-weight: 600; color: #777; padding-bottom: 10px; font-size: 14px; }
+        .day-cell { background: rgba(255,255,255,0.5); border-radius: 14px; height: 75px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; position: relative; border: 1px solid rgba(255,255,255,0.5); }
+        .day-cell:not(.empty) { cursor: pointer; }
+        .day-cell:not(.empty):hover { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .day-num { font-size: 13px; font-weight: 600; color: #555; }
+        .day-cell.today { border: 2px solid var(--mint); background: rgba(167, 231, 215, 0.15); }
+        .day-cell.today .day-num { color: #1abc9c; font-weight: 800; }
+        .cell-icons { display: flex; gap: 2px; flex-wrap: wrap; width: 100%; }
+        .cell-moti-dot { width: 14px; height: 14px; background: var(--brand-sub); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        .cell-moti-count { background: var(--brand-main); color: white; font-size: 10px; padding: 1px 5px; border-radius: 8px; font-weight: 700; }
+
+        /* --- PROFILE PAGE --- */
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 768px) { .profile-grid { grid-template-columns: 1fr; } }
+        .stats-list { display: flex; flex-direction: column; gap: 16px; }
+        .stat-item { background: rgba(255,255,255,0.6); padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.3); }
+        .stat-label { font-size: 15px; color: #666; font-weight: 500; }
+        .stat-value { font-size: 20px; color: #222; font-weight: 700; }
+        .chart-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .progress-svg { width: 160px; height: 160px; transform: rotate(-90deg); }
+        .progress-bg-circle { fill: none; stroke: rgba(0,0,0,0.05); stroke-width: 12; }
+        .progress-bar-circle { fill: none; stroke: url(#gradient-stroke); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 1s ease-out; }
+        .chart-box { position: relative; width: 160px; height: 160px; margin-bottom: 15px; }
+        .chart-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; font-weight: 800; color: var(--brand-main); }
+        .profile-footer-text { grid-column: span 2; text-align: center; font-size: 15px; font-weight: 600; color: #778; margin-top: 20px; }
+        @media (max-width: 768px) { .profile-footer-text { grid-column: span 1; } }
+
+        /* --- POPUP MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            z-index: 99999 !important; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: white; width: 100%; max-width: 460px;
+            border-radius: 24px; padding: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            transform: translateY(30px); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+        }
+        .modal-overlay.show .modal-content { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 25px; right: 25px;
+            background: none; border: none; font-size: 26px; color: #aaa; cursor: pointer;
+            transition: color 0.2s; line-height: 1;
+        }
+        .modal-close:hover { color: #222; }
+        .modal-date { font-size: 14px; color: var(--brand-main); font-weight: 700; margin-bottom: 14px; }
+        .modal-body { font-size: 16px; line-height: 1.7; color: #444; white-space: pre-wrap; word-break: break-all; }
+
+        /* Custom Auth Prompt Modal */
+        .auth-modal-content { text-align: center; }
+        .auth-modal-content h3 { margin-bottom: 15px; font-size: 20px; }
+        .auth-input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ccc; margin-bottom: 15px; font-size: 15px; outline: none; text-align: center; }
+        .auth-modal-btns { display: flex; flex-direction: column; gap: 10px; }
+        .btn-guest { background: #f1f3f5; color: #495057; border: 1px solid #dee2e6; padding: 10px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+
+        /* --- FOOTER STYLE (새로 추가됨) --- */
+        footer {
+            width: 100%;
+            padding: 20px 0 30px 0;
+            text-align: center;
+            background: transparent;
+            z-index: 10;
+        }
+        .footer-content {
+            font-size: 13px;
+            color: #888ea8;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(185, 167, 255, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(185, 167, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(185, 167, 255, 0); } }
+
+        /* --- MOBILE HEADER FIX (로그인 버튼 포함 5개 메뉴 잘림/줄바꿈 방지) --- */
+        @media (max-width: 640px) {
+            header {
+                height: auto;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 14px 16px;
+                row-gap: 10px;
+            }
+            .logo { font-size: 19px; }
+            .nav-container {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+                row-gap: 10px;
+                gap: 10px 16px;
+            }
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px 16px;
+            }
+            nav a { font-size: 13px; white-space: nowrap; }
+            .btn-auth { font-size: 13px; padding: 6px 16px; }
+            main { margin-top: 150px; } /* 헤더와 겹치면 숫자를 키우고, 빈틈이 크면 줄이세요 */
+        }
+
+        @media (max-width: 380px) {
+            nav { gap: 6px 10px; }
+            nav a { font-size: 12px; }
+            main { margin-top: 165px; }
+        }
+    </style>
 </head>
 <body>
+
     <header>
         <div class="logo" onclick="navigateTo('home')"><span class="logo-dot"></span>Memotive</div>
-        <nav>
-            <a id="nav-home" onclick="navigateTo('home')" class="active">Home</a>
-            <a id="nav-write" onclick="navigateTo('write')">Write</a>
-            <a id="nav-cells" onclick="navigateTo('cells')">Memory Cells</a>
-            <a id="nav-calendar" onclick="navigateTo('calendar')">Calendar</a>
-            <a id="nav-profile" onclick="navigateTo('profile')">Profile</a>
-        </nav>
+        <div class="nav-container">
+            <nav>
+                <a id="nav-home" onclick="navigateTo('home')" class="active">Home</a>
+                <a id="nav-write" onclick="navigateTo('write')">Write</a>
+                <a id="nav-cells" onclick="navigateTo('cells')">Memory Cells</a>
+                <a id="nav-calendar" onclick="navigateTo('calendar')">Calendar</a>
+                <a id="nav-profile" onclick="navigateTo('profile')">Profile</a>
+            </nav>
+            <button id="auth-btn" class="btn-auth" onclick="openAuthModal()">로그인</button>
+        </div>
     </header>
+
     <main>
         <section id="page-home" class="page active">
             <div class="home-container">
@@ -43,9 +423,10 @@
                 <div class="ambient-cells" id="ambient-cells-container"></div>
             </div>
         </section>
+
         <section id="page-write" class="page">
             <div class="write-wrapper glass-card">
-                <h2>오늘의 기억은 무엇인가요?</h2>
+                <h2>오늘의 기억은 무엇인가요? <span id="write-user-badge" style="font-size:14px; color:var(--brand-main);"></span></h2>
                 <div class="textarea-container">
                     <textarea id="memory-input" maxlength="300" placeholder="이곳에 기록된 당신의 경험은 세포가 되어 영원히 보관됩니다. (최대 300자)"></textarea>
                     <div class="char-counter"><span id="char-count">0</span> / 300</div>
@@ -53,10 +434,11 @@
                 <div class="write-actions"><button class="btn-primary" onclick="saveMemory()">기억 저장하기 <i class="fa-solid fa-cloud-arrow-up"></i></button></div>
             </div>
         </section>
+
         <section id="page-cells" class="page">
             <div class="glass-card">
                 <div class="cells-header">
-                    <h2>Memory Cells</h2>
+                    <h2>Memory Cells <span id="cells-user-badge" style="font-size:16px; color:#667085; font-weight:500;"></span></h2>
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <input type="text" id="cell-search" placeholder="날짜 또는 내용 검색..." oninput="searchCells()">
@@ -67,6 +449,7 @@
                 </div>
             </div>
         </section>
+
         <section id="page-calendar" class="page">
             <div class="calendar-container glass-card">
                 <div class="calendar-header">
@@ -77,9 +460,10 @@
                 <div class="calendar-grid" id="calendar-grid"></div>
             </div>
         </section>
+
         <section id="page-profile" class="page">
             <div class="glass-card">
-                <h2 style="margin-bottom: 25px;">성장 리포트</h2>
+                <h2 style="margin-bottom: 25px;">성장 리포트 <span id="profile-user-badge" style="font-size:16px; color:#667085; font-weight:500;"></span></h2>
                 <div class="profile-grid">
                     <div class="stats-list">
                         <div class="stat-item"><span class="stat-label">이번 달 총 기록 수</span><span class="stat-value" id="stat-month-count">0개</span></div>
@@ -101,13 +485,21 @@
                             </svg>
                             <div class="chart-text" id="chart-percentage">0%</div>
                         </div>
-                        <p style="font-size: 14px; color:#777;">목표 기준 : 한 달 20일 기록</p>
+                        <p style="font-size: 14px; color:#777;">목표 기준 : 한 달 <span id="target-goal-text">20</span>일 기록</p>
+                        <button class="btn-sm" onclick="editTargetGoal()">목표 수정</button>
                     </div>
                     <div class="profile-footer-text">"Every memory builds tomorrow."</div>
                 </div>
             </div>
         </section>
     </main>
+
+    <footer>
+        <div class="footer-content">
+            Chungnam Arts High School - Design Major | Created by Somi Kwon
+        </div>
+    </footer>
+
     <div class="modal-overlay" id="detail-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -115,13 +507,422 @@
             <div class="modal-body" id="modal-body"></div>
         </div>
     </div>
+
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-content auth-modal-content">
+            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            <h3>Memotive 로그인</h3>
+            <input type="text" id="auth-username-input" class="auth-input" placeholder="계정 ID를 입력하세요">
+            <div class="auth-modal-btns">
+                <button class="btn-primary" style="justify-content:center; width:100%;" onclick="submitLogin()">로그인 / 가입</button>
+                <button class="btn-guest" onclick="loginAsGuest()">가입 없이 사용하기</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast-alert">오늘의 기억이 저장되었습니다.</div>
-    <script src="script.js"></script>
+
     <script>
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("sw.js");
+        // 로그인 세션 상태 세분화 (null: 로그아웃 상태, 'guest': 비회원, 'ID문자열': 회원계정)
+        let currentUser = localStorage.getItem('memotive_current_user') || null;
+        let memories = [];
+        let targetGoal = 20;
+
+        let currentYear = 2026;
+        let currentMonth = 6;
+        let cellNodesData = [];
+        let petriAnimationId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharCounter();
+            createAmbientCells();
+            loadUserData();
+            updateAuthUI();
+
+            document.getElementById('detail-modal').addEventListener('click', function(e) {
+                if(e.target === this) closeModal();
             });
+            document.getElementById('auth-modal').addEventListener('click', function(e) {
+                if(e.target === this) closeAuthModal();
+            });
+        });
+
+        function loadUserData() {
+            if (!currentUser) {
+                memories = [];
+                targetGoal = 20;
+            } else {
+                memories = JSON.parse(localStorage.getItem(`memories_${currentUser}`)) || [];
+                targetGoal = parseInt(localStorage.getItem(`targetGoal_${currentUser}`)) || 20;
+            }
+
+            const badgeText = currentUser === 'guest' ? '(가입 없이 사용 중)' : (currentUser ? `(${currentUser}님 계정)` : '');
+            document.getElementById('write-user-badge').innerText = badgeText;
+            document.getElementById('cells-user-badge').innerText = badgeText;
+            document.getElementById('profile-user-badge').innerText = badgeText;
+        }
+
+        function updateAuthUI() {
+            const authBtn = document.getElementById('auth-btn');
+            if (currentUser) {
+                authBtn.innerText = '로그아웃';
+            } else {
+                authBtn.innerText = '로그인';
+            }
+        }
+
+        function openAuthModal() {
+            if (currentUser) {
+                currentUser = null;
+                localStorage.removeItem('memotive_current_user');
+                loadUserData();
+                updateAuthUI();
+                showToast('로그아웃 되었습니다. 저장소가 잠깁니다.');
+                navigateTo('home');
+            } else {
+                document.getElementById('auth-username-input').value = '';
+                document.getElementById('auth-modal').classList.add('show');
+            }
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.remove('show');
+        }
+
+        function submitLogin() {
+            const username = document.getElementById('auth-username-input').value.trim();
+            if (!username) { alert('아이디를 입력해 주세요.'); return; }
+            if (username.toLowerCase() === 'guest') { alert('guest는 예약어입니다. 다른 ID를 써주세요.'); return; }
+
+            currentUser = username;
+            localStorage.setItem('memotive_current_user', currentUser);
+            loadUserData();
+            updateAuthUI();
+            closeAuthModal();
+            showToast(`${currentUser}님 환영합니다! 해당 계정 세포를 불러옵니다.`);
+            navigateTo('cells');
+        }
+
+        function loginAsGuest() {
+            currentUser = 'guest';
+            localStorage.setItem('memotive_current_user', currentUser);
+            loadUserData();
+            updateAuthUI();
+            closeAuthModal();
+            showToast('가입 없이 체험 공간이 열렸습니다!');
+            navigateTo('write');
+        }
+
+        function editTargetGoal() {
+            if (!currentUser) { alert('로그인이 필요한 기능입니다.'); return; }
+            const newGoal = prompt('새로운 한 달 목표 기록 일수를 입력하세요 (숫자만 입력):', targetGoal);
+            if (newGoal !== null) {
+                const parsedGoal = parseInt(newGoal);
+                if (isNaN(parsedGoal) || parsedGoal <= 0) {
+                    alert('올바른 숫자를 입력해 주세요.');
+                } else {
+                    targetGoal = parsedGoal;
+                    localStorage.setItem(`targetGoal_${currentUser}`, targetGoal);
+                    document.getElementById('target-goal-text').innerText = targetGoal;
+                    renderProfile();
+                    showToast('목표가 수정되었습니다.');
+                }
+            }
+        }
+
+        function navigateTo(pageId) {
+            if (pageId !== 'home' && !currentUser) {
+                alert('로그인 또는 [가입 없이 사용하기]를 클릭해야 공간을 이용할 수 있습니다!');
+                openAuthModal();
+                return;
+            }
+
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(nav => nav.classList.remove('active'));
+
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            document.getElementById(`nav-${pageId}`).classList.add('active');
+
+            if (pageId === 'cells') {
+                renderMemoryCells();
+            } else {
+                cancelAnimationFrame(petriAnimationId);
+            }
+            if (pageId === 'calendar') renderCalendar();
+            if (pageId === 'profile') renderProfile();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-alert');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        function initCharCounter() {
+            const textarea = document.getElementById('memory-input');
+            const counter = document.getElementById('char-count');
+            textarea.addEventListener('input', () => { counter.innerText = textarea.value.length; });
+        }
+
+        function saveMemory() {
+            if (!currentUser) { alert('권한이 없습니다.'); return; }
+            const textarea = document.getElementById('memory-input');
+            const text = textarea.value.trim();
+            if (!text) { alert('내용을 입력해 주세요.'); return; }
+
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+            const newMemory = { id: Date.now(), date: dateStr, content: text, timestamp: now.getTime() };
+            memories.push(newMemory);
+
+            localStorage.setItem(`memories_${currentUser}`, JSON.stringify(memories));
+
+            textarea.value = '';
+            document.getElementById('char-count').innerText = 0;
+
+            showToast('오늘의 기억이 세포로 등록되었습니다.');
+            setTimeout(() => navigateTo('cells'), 800);
+        }
+
+        function renderMemoryCells() {
+            const dish = document.getElementById('petri-dish');
+            const msg = document.getElementById('no-memories-msg');
+            dish.innerHTML = '';
+            dish.appendChild(msg);
+
+            if (!currentUser || memories.length === 0) { msg.style.display = 'block'; return; }
+            else { msg.style.display = 'none'; }
+
+            cellNodesData = [];
+            const colors = ['rgba(126, 108, 249, 0.65)', 'rgba(185, 167, 255, 0.7)', 'rgba(167, 231, 215, 0.75)', 'rgba(205, 232, 255, 0.8)'];
+
+            memories.forEach((mem) => {
+                const node = document.createElement('div');
+                node.className = 'memory-cell-node';
+
+                const size = Math.floor(Math.random() * 25) + 60;
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+                const dateParts = mem.date.split('-');
+                node.innerText = `${dateParts[1]}.${dateParts[2]}`;
+
+                node.style.width = `${size}px`;
+                node.style.height = `${size}px`;
+                node.style.background = randomColor;
+
+                const x = Math.random() * (dish.clientWidth - size - 40) + 20;
+                const y = Math.random() * (dish.clientHeight - size - 40) + 20;
+
+                node.style.left = `${x}px`;
+                node.style.top = `${y}px`;
+
+                node.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(mem);
+                });
+
+                dish.appendChild(node);
+
+                cellNodesData.push({
+                    element: node,
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    radius: size / 2,
+                    content: mem.content,
+                    date: mem.date
+                });
+            });
+
+            cancelAnimationFrame(petriAnimationId);
+            animatePetriDish();
+        }
+
+        function animatePetriDish() {
+            const dish = document.getElementById('petri-dish');
+            if(!dish) return;
+            const W = dish.clientWidth;
+            const H = dish.clientHeight;
+
+            cellNodesData.forEach(cell => {
+                cell.x += cell.vx;
+                cell.y += cell.vy;
+
+                if (cell.x <= 0 || cell.x >= W - cell.radius * 2) cell.vx *= -1;
+                if (cell.y <= 0 || cell.y >= H - cell.radius * 2) cell.vy *= -1;
+
+                if (cell.x < 0) cell.x = 0;
+                if (cell.x > W - cell.radius * 2) cell.x = W - cell.radius * 2;
+                if (cell.y < 0) cell.y = 0;
+                if (cell.y > H - cell.radius * 2) cell.y = H - cell.radius * 2;
+
+                cell.element.style.left = `${cell.x}px`;
+                cell.element.style.top = `${cell.y}px`;
+            });
+
+            petriAnimationId = requestAnimationFrame(animatePetriDish);
+        }
+
+        function searchCells() {
+            const query = document.getElementById('cell-search').value.toLowerCase().trim();
+            const msg = document.getElementById('no-memories-msg');
+            let hasResult = false;
+
+            cellNodesData.forEach(cell => {
+                const match = cell.content.toLowerCase().includes(query) || cell.date.includes(query);
+                if (query === '') {
+                    cell.element.classList.remove('blur-out', 'highlight-in');
+                    hasResult = true;
+                } else if (match) {
+                    cell.element.classList.remove('blur-out');
+                    cell.element.classList.add('highlight-in');
+                    hasResult = true;
+                } else {
+                    cell.element.classList.remove('highlight-in');
+                    cell.element.classList.add('blur-out');
+                }
+            });
+            msg.style.display = (!hasResult && query !== '') ? 'block' : 'none';
+        }
+
+        const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const title = document.getElementById('calendar-title');
+            if(!grid) return;
+            grid.innerHTML = '';
+            title.innerText = `${currentYear}.${String(currentMonth + 1).padStart(2, '0')}`;
+
+            weekdays.forEach(wd => {
+                const div = document.createElement('div');
+                div.className = 'weekday'; div.innerText = wd; grid.appendChild(div);
+            });
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'day-cell empty'; grid.appendChild(emptyCell);
+            }
+
+            for (let d = 1; d <= totalDays; d++) {
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+                if (new Date().getFullYear() === currentYear && new Date().getMonth() === currentMonth && new Date().getDate() === d) {
+                    cell.classList.add('today');
+                }
+
+                const numSpan = document.createElement('span');
+                numSpan.className = 'day-num'; numSpan.innerText = d; cell.appendChild(numSpan);
+
+                const dayMemories = memories.filter(m => m.date === dateStr);
+                if (dayMemories.length > 0) {
+                    const iconsContainer = document.createElement('div');
+                    iconsContainer.className = 'cell-icons';
+                    if (dayMemories.length === 1) {
+                        const dot = document.createElement('span'); dot.className = 'cell-moti-dot'; iconsContainer.appendChild(dot);
+                    } else {
+                        const count = document.createElement('span'); count.className = 'cell-moti-count'; count.innerText = dayMemories.length; iconsContainer.appendChild(count);
+                    }
+                    cell.appendChild(iconsContainer);
+                    cell.onclick = () => {
+                        const compositeContent = dayMemories.map((m, idx) => `[기록 ${idx+1}]\n${m.content}`).join('\n\n');
+                        openModal({ date: dateStr, content: compositeContent });
+                    };
+                }
+                grid.appendChild(cell);
+            }
+        }
+
+        function changeMonth(dir) {
+            currentMonth += dir;
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            renderCalendar();
+        }
+
+        function renderProfile() {
+            const targetPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+            const monthMemories = memories.filter(m => m.date.startsWith(targetPrefix));
+
+            document.getElementById('stat-month-count').innerText = `${monthMemories.length}개`;
+            document.getElementById('stat-total-cells').innerText = `${memories.length}개`;
+            document.getElementById('stat-streak').innerText = `${calculateStreak()}일`;
+            document.getElementById('stat-top-day').innerText = calculateTopDay();
+            document.getElementById('target-goal-text').innerText = targetGoal;
+
+            const uniqueDays = new Set(monthMemories.map(m => m.date)).size;
+            const percent = Math.min(Math.round((uniqueDays / targetGoal) * 100), 100);
+
+            document.getElementById('chart-percentage').innerText = `${percent}%`;
+            const circle = document.getElementById('progress-circle');
+            if(circle) {
+                const circumference = 2 * Math.PI * 70;
+                circle.style.strokeDashoffset = circumference - (percent / 100) * circumference;
+            }
+        }
+
+        function calculateStreak() {
+            if (memories.length === 0) return 0;
+            const uniqueDates = Array.from(new Set(memories.map(m => m.date))).sort().reverse();
+            const todayStr = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+            if (uniqueDates[0] !== todayStr && uniqueDates[0] !== yesterdayStr) return 0;
+
+            let streak = 1; let current = new Date(uniqueDates[0]);
+            for (let i = 1; i < uniqueDates.length; i++) {
+                const nextDate = new Date(uniqueDates[i]);
+                const diffDays = Math.ceil(Math.abs(current - nextDate) / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) { streak++; current = nextDate; }
+                else if (diffDays > 1) { break; }
+            }
+            return streak;
+        }
+
+        function calculateTopDay() {
+            if (memories.length === 0) return '-';
+            const dayCounts = [0,0,0,0,0,0,0];
+            memories.forEach(m => { dayCounts[new Date(m.date).getDay()]++; });
+            let maxIdx = 0; let maxVal = -1;
+            dayCounts.forEach((count, idx) => { if (count > maxVal) { maxVal = count; maxIdx = idx; } });
+            return maxVal === 0 ? '-' : weekdays[maxIdx] + '요일';
+        }
+
+        function openModal(memoryObj) {
+            document.getElementById('modal-date').innerText = memoryObj.date;
+            document.getElementById('modal-body').innerText = memoryObj.content;
+            document.getElementById('detail-modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('detail-modal').classList.remove('show');
+        }
+
+        // 앰비언트 백그라운드 세포 생성 함수
+        function createAmbientCells() {
+            const container = document.getElementById('ambient-cells-container');
+            if(!container) return;
+            const count = 12;
+            for(let i=0; i<count; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'bg-cell';
+                const size = Math.random() * 40 + 20;
+                cell.style.width = size + 'px';
+                cell.style.height = size + 'px';
+                cell.style.left = Math.random() * 90 + 5 + '%';
+                cell.style.top = Math.random() * 80 + 10 + '%';
+                cell.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                cell.style.animationDelay = (Math.random() * -5) + 's';
+                container.appendChild(cell);
+            }
         }
     </script>
 </body>
