@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memotive - Every Cell Remembers.</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="navigateTo('home')"><span class="logo-dot"></span>Memotive</div>
+        <nav>
+            <a id="nav-home" onclick="navigateTo('home')" class="active">Home</a>
+            <a id="nav-write" onclick="navigateTo('write')">Write</a>
+            <a id="nav-cells" onclick="navigateTo('cells')">Memory Cells</a>
+            <a id="nav-calendar" onclick="navigateTo('calendar')">Calendar</a>
+            <a id="nav-profile" onclick="navigateTo('profile')">Profile</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="page-home" class="page active">
+            <div class="home-container">
+                <p class="slogan">Every Cell Remembers.</p>
+                <h1 class="main-title">Remember Today.<br>Grow Tomorrow.</h1>
+                <p class="intro-text">기억세포는 한 번 경험한 정보를 오랫동안 기억합니다. Memotive는 소중한 하루를 세포로 보관하며 더 빛나는 내일을 만들어갑니다.</p>
+                <div class="moti-container">
+                    <div class="moti">
+                        <div class="moti-face">
+                            <div class="moti-blush left"></div>
+                            <div class="moti-eye" style="left:0"></div>
+                            <div class="moti-eye" style="right:0"></div>
+                            <div class="moti-blush right"></div>
+                            <div class="moti-mouth"></div>
+                        </div>
+                    </div>
+                </div>
+                <div><button class="btn-primary" onclick="navigateTo('write')">오늘의 기억 기록하기 <i class="fa-solid fa-arrow-right"></i></button></div>
+                <div class="ambient-cells" id="ambient-cells-container"></div>
+            </div>
+        </section>
+
+        <section id="page-write" class="page">
+            <div class="write-wrapper glass-card">
+                <h2>오늘의 기억은 무엇인가요?</h2>
+                <div class="textarea-container">
+                    <textarea id="memory-input" maxlength="300" placeholder="이곳에 기록된 당신의 경험은 세포가 되어 영원히 보관됩니다. (최대 300자)"></textarea>
+                    <div class="char-counter"><span id="char-count">0</span> / 300</div>
+                </div>
+                <div class="write-actions"><button class="btn-primary" onclick="saveMemory()">기억 저장하기 <i class="fa-solid fa-cloud-arrow-up"></i></button></div>
+            </div>
+        </section>
+
+        <section id="page-cells" class="page">
+            <div class="glass-card">
+                <div class="cells-header">
+                    <h2>Memory Cells</h2>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="cell-search" placeholder="날짜 또는 내용 검색..." oninput="searchCells()">
+                    </div>
+                </div>
+                <div class="petri-dish" id="petri-dish">
+                    <div class="no-memories-msg" id="no-memories-msg">No Memories Found</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-calendar" class="page">
+            <div class="calendar-container glass-card">
+                <div class="calendar-header">
+                    <button class="calendar-nav-btn" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h3 id="calendar-title">2026.07</h3>
+                    <button class="calendar-nav-btn" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
+            </div>
+        </section>
+
+        <section id="page-profile" class="page">
+            <div class="glass-card">
+                <h2 style="margin-bottom: 25px;">성장 리포트</h2>
+                <div class="profile-grid">
+                    <div class="stats-list">
+                        <div class="stat-item"><span class="stat-label">이번 달 총 기록 수</span><span class="stat-value" id="stat-month-count">0개</span></div>
+                        <div class="stat-item"><span class="stat-label">생성된 총 기억세포 수</span><span class="stat-value" id="stat-total-cells">0개</span></div>
+                        <div class="stat-item"><span class="stat-label">연속 기록 일수</span><span class="stat-value" id="stat-streak">0일</span></div>
+                        <div class="stat-item"><span class="stat-label">가장 자주 기록한 요일</span><span class="stat-value" id="stat-top-day">-</span></div>
+                    </div>
+                    <div class="chart-container">
+                        <h4 style="margin-bottom: 15px; color:#555;">이달의 목표 달성률</h4>
+                        <div class="chart-box">
+                            <svg class="progress-svg">
+                                <defs>
+                                    <linearGradient id="gradient-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#7E6CF9" /><stop offset="100%" stop-color="#A7E7D7" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="progress-bg-circle" cx="80" cy="80" r="70"></circle>
+                                <circle class="progress-bar-circle" id="progress-circle" cx="80" cy="80" r="70"></circle>
+                            </svg>
+                            <div class="chart-text" id="chart-percentage">0%</div>
+                        </div>
+                        <p style="font-size: 14px; color:#777;">목표 기준 : 한 달 20일 기록</p>
+                    </div>
+                    <div class="profile-footer-text">"Every memory builds tomorrow."</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="detail-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-date" id="modal-date"></div>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast-alert">오늘의 기억이 저장되었습니다.</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
